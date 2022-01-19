@@ -129,7 +129,7 @@ dmypy.json
 .pyre/
 
 # API Keys
-APIKEYS.py
+src/APIKEYS.py
 
 # PYCHARM
 .idea/
