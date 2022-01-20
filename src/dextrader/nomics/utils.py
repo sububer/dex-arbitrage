@@ -4,7 +4,7 @@ import os
 import pandas as pd
 
 
-def get_recent_trades(exchange, market, limit=100):
+def get_recent_trades(exchange: str, market: str, limit: int = 100):
     api_key = os.getenv('API_KEY')
     url = "https://api.nomics.com/v1/trades?key={0}" \
           "&exchange={1}" \
@@ -14,7 +14,7 @@ def get_recent_trades(exchange, market, limit=100):
     return json.loads(urllib.request.urlopen(url).read())
 
 
-def get_candles(exchange, market, start, end):
+def get_candles(exchange: str, market: str, start: str, end: str):
     api_key = os.getenv('API_KEY')
     url = "https://api.nomics.com/v1/exchange_candles?key={0}" \
           "&interval=1m" \
@@ -24,7 +24,7 @@ def get_candles(exchange, market, start, end):
     return json.loads(urllib.request.urlopen(url).read())
 
 
-def format_query_as_dataframe(query):
+def format_query_as_dataframe(query: dict):
     df = pd.DataFrame(data=query)
     df['Datetime'] = pd.to_datetime(df['timestamp'])
     df = df.drop(['timestamp'], axis=1)
