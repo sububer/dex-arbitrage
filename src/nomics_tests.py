@@ -8,13 +8,12 @@ def test_recent_trades():
     market = "0x58f876857a02d6762e0101bb5c46a8c1ed44dc16"
     query = get_recent_trades(exchange, market)
     df = format_query_as_dataframe(query)
-    print(df.head(3))
+    #print(df.head(3))
     if len(df) < 1:
         print("FAILED")
-        return False
     else:
         print("PASSED")
-        return True
+    return df
 
 
 def test_candles():
@@ -24,16 +23,14 @@ def test_candles():
     end = "2022-01-19"
     query = get_candles(exchange, market, start, end)
     df = format_query_as_dataframe(query)
-    print(df.head(3))
+    #print(df.head(3))
     if len(df) < 1:
         print("FAILED")
-        return False
     else:
         print("PASSED")
-        return True
-
+    return df    
 
 if __name__ == '__main__':
     os.environ["API_KEY"] = API_KEY
-    test_recent_trades()
-    test_candles()
+    recent_trades_df = test_recent_trades()
+    candles_df = test_candles()
