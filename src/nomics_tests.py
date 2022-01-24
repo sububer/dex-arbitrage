@@ -17,7 +17,7 @@ def test_recent_trades():
     return df
 
 
-def test_candles():
+def test_candles_pancake():
     exchange = "pancakeswapv2"
     market = "0x58f876857a02d6762e0101bb5c46a8c1ed44dc16"
     start = "2022-01-18"
@@ -30,6 +30,20 @@ def test_candles():
     else:
         print("PASSED")
     return df    
+def test_candles_ape():
+    exchange = "apeswap"
+    market = "0x51e6d27fa57373d8d4c256231241053a70cb1d93"
+    start = "2022-01-18"
+    end = "2022-01-19"
+    query = get_candles(exchange, market, start, end)
+    df = format_query_as_dataframe(query)
+    print(df.head(3))
+    if len(df) < 1:
+        print("FAILED")
+    else:
+        print("PASSED")
+    return df    
+
 
 def test_pairs():
     for chain_id in nomics["chain"].keys():
@@ -42,7 +56,7 @@ def test_pairs():
     query = get_candles(exchange, hash, start, end)
     df = format_query_as_dataframe(query)
     print(df.head(3))
-    print("PASSED")
+    print("test_pairs PASSED")
     return df
 
 
