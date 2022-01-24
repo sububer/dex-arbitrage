@@ -34,3 +34,63 @@ nomics["chain"]["polygon"]["exchanges"]["balancerv2_polygon"]["markets"]["MATICU
 
 
 
+def get_chains() -> list:
+    ''' Returns list of available chains.'''
+    chains = list()
+
+    for chain in nomics["chain"].keys():
+        chains.append(chain)
+    
+    return chains
+
+
+def get_exchanges(chain_id: str) -> list:
+    '''Returns list of exchanges available for a chain.
+
+    input: chain_id -- eg 'bsc', 'avalanche', etc.
+    '''
+    exchanges = list()
+    
+    for exchange_id in nomics["chain"][chain_id]['exchanges'].keys():
+        exchanges.append(exchange_id)
+
+    return exchanges
+
+
+def get_market_pairs(chain_id: str) -> list:
+    '''Returns list of unique market pairs available to analyze for a given chain
+
+    input: chain_id -- eg 'bsc', 'avalanche', etc.
+    '''
+    market_pairs = set()
+
+    for exchange_id in nomics["chain"][chain_id]['exchanges'].keys():
+        for pair_id in nomics["chain"][chain_id]['exchanges'][exchange_id]['markets'].keys():
+            market_pairs.add(pair_id)
+
+    return market_pairs
+
+
+
+def get_market_query_data_for_pair(chain_id: str,pair: str) -> dict:
+    '''returns dict of all supported exchange, market_hash data for any given pair
+
+    input:
+        chain_id -- eg 'bsc', 'avalanche', etc.
+        pair -- pair string, eg 'BNBBUSD', 'USDCBUSD'
+
+    output:
+     dict:
+       { pair_id : [list of tuples (exchange, markethash), ...]}
+       eg:
+       {'BNBBUSD' : [('pancakeswapv2', '0x58f876857a02d6762e0101bb5c46a8c1ed44dc16'), ...] }
+    '''
+    pair_market_info = dict()
+    pair_market_info[pair] = list()
+    
+    for exchange_id in nomics["chain"][chain_id]['exchanges'].keys():
+        for pair_id in nomics["chain"][chain_id]['exchanges'][exchange_id]['markets'].keys():
+            if pair_id == pair:
+                pair_market_info[pair].append((exchange_id, nomics["chain"][chain_id]['exchanges'][exchange_id]['markets'][pair_id] ))
+
+    return pair_market_info
