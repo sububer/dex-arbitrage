@@ -71,32 +71,32 @@ def get_profitable_trades(df):
 
 if __name__ == '__main__':
     os.environ["API_KEY"] = API_KEY
-    pancake_df = test_candles_pancake()
-    ape_df = test_candles_ape()
+    df_1 = test_candles_pancake()
+    df_2 = test_candles_ape()
     
     
-    pancake_df = drop_null(pancake_df)
-    ape_df = drop_null(ape_df)
+    df_1 = drop_null(df_1)
+    df_2 = drop_null(df_2)
     
-    pancake_df = data_types_close(pancake_df)
-    ape_df = data_types_close(ape_df)
+    df_1 = data_types_close(df_1)
+    df_2 = data_types_close(df_2)
     
-    pancake_df = fetch_close_from_df(pancake_df)
-    ape_df = fetch_close_from_df(ape_df)
+    df_1 = fetch_close_from_df(df_1)
+    df_2 = fetch_close_from_df(df_2)
     
-    arbitrage = arbitrage_spread(pancake_df,ape_df)
+    arbitrage = arbitrage_spread(df_1,df_2)
     
-    combined_df = combine_df(pancake_df,ape_df)
+    combined_df = combine_df(df_1,df_2)
     
     spread_return_df = get_spread_return(combined_df)
     
     profitable_trades= get_profitable_trades(spread_return_df)
     
-    print(f"Pancakeswap- BNB/BUSD")
-    print(pancake_df.head(3))
+    print(f"Exchange 1 Dataframe:/n")
+    print(df_1.head())
     print("---------------------------------")
-    print(f"ApeSwap- BNB/BUSD")
-    print(ape_df.head(3))
+    print(f"Exchange 2 Dataframe:/n")
+    print(df_2.head())
     print("---------------------------------")
     print(f"Arbitrage trades preview:\n{arbitrage.head()}")
     print("---------------------------------")
