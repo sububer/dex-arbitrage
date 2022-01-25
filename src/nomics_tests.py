@@ -14,7 +14,6 @@ def test_recent_trades():
         print("FAILED")
     else:
         print("PASSED")
-    return df
 
 
 def test_candles_pancake():
@@ -29,7 +28,8 @@ def test_candles_pancake():
         print("FAILED")
     else:
         print("PASSED")
-    return df    
+
+
 def test_candles_ape():
     exchange = "apeswap"
     market = "0x51e6d27fa57373d8d4c256231241053a70cb1d93"
@@ -42,7 +42,6 @@ def test_candles_ape():
         print("FAILED")
     else:
         print("PASSED")
-    return df    
 
 
 def test_pairs():
@@ -57,11 +56,11 @@ def test_pairs():
     df = format_query_as_dataframe(query)
     print(df.head(3))
     print("test_pairs PASSED")
-    return df
 
 
 if __name__ == '__main__':
     os.environ["API_KEY"] = API_KEY
     test_recent_trades()
-    test_candles()
+    test_candles_pancake()
+    test_candles_ape()
     test_pairs()
