@@ -62,7 +62,7 @@ def get_profitable_trades(df):
     net_profit= df['returns']- 0.8
     for index, row in df.iterrows():
         if row['returns'] > 0.8:
-             profitable_trades.append('returns') 
+             profitable_trades.append(row['returns']) 
     return profitable_trades
 
 
@@ -76,7 +76,7 @@ def generate_arbitrage_data_between_markets(df1: pd.DataFrame, df2: pd.DataFrame
     outputs:
     arbitrage_results (dict): in the form:
     { 'info' : [pairstring, market_1, market_2],
-      'arbitrage' : arbitrage,
+      'arbitrage' : <pd.DataFrame>,
       'combined_df : <pd.DataFrame>, 
       'spread_return_df' : <pd.DataFrame>,
       'profitable_trades': <list>

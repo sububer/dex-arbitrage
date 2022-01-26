@@ -110,8 +110,8 @@ def do_arbitrage_analysis_for_pair(pair: str, csvfiles: list):
         market_a_file_path = Path(csv_dir + market_a_file_name)
         market_b_file_path = Path(csv_dir + market_b_file_name)
 
-        market_a_df = pd.read_csv(market_a_file_path, infer_datetime_format=True, index_col='Datetime', parse_dates=True)
-        market_b_df = pd.read_csv(market_b_file_path, infer_datetime_format=True, index_col='Datetime', parse_dates=True)
+        market_a_df = pd.read_csv(market_a_file_path, infer_datetime_format=True, parse_dates=True)
+        market_b_df = pd.read_csv(market_b_file_path, infer_datetime_format=True, parse_dates=True)
 
         arbitrage_data_for_markets = generate_arbitrage_data_between_markets(market_a_df, market_b_df, pair, market_a_name, market_b_name)
 

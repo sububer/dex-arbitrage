@@ -29,26 +29,26 @@ def show_arbitrage_viz(arb_results_list: list) -> None:
     # dict keys are: dict_keys(['info', 'arbitrage', 'combined_df', 'spread_return_df', 'profitable_trades'])
     arb_info_dict = arb_results_list[0]
 
-    # tuple ('BNBBUSD', 'apeswap', 'pancakeswapv2')
-    print(arb_info_dict['info'])
+    # unpack info tuple ('BNBBUSD', 'apeswap', 'pancakeswapv2')
+    (pairstr, mkt1, mkt2) = arb_info_dict['info']
 
     # dataframes
-    arbitrage_df = arb_info_dict['arbitrage']
+    arbitrage_df = arb_info_dict['arbitrage'].dropna()
+    print('arbitrage_df')
     print(arbitrage_df.head(3))
 
     combined_df = arb_info_dict['combined_df']
+    combined_df['date_time'] = combined_df.index
+    print('combined_df')
     print(combined_df.head(3))
 
     spread_return_df = arb_info_dict['spread_return_df']
+    print('spread_return_df')
     print(spread_return_df.head(3))
 
     # list
     profitable_trades = arb_info_dict['profitable_trades']
     print(profitable_trades)
-
-    
-
-    sys.exit()
 
     # Interactive view
     # load the template 
@@ -57,16 +57,16 @@ def show_arbitrage_viz(arb_results_list: list) -> None:
 
 
     # calculate which decentralize exchange has the higher value and drop the NA 
-    apeswap_BNBBUSD['APE2PS'] = (pancakeswapv2_BNBBUSD['low'] - apeswap_BNBBUSD['high'])/apeswap_BNBBUSD['high']
+    # apeswap_BNBBUSD['APE2PS'] = (pancakeswapv2_BNBBUSD['low'] - apeswap_BNBBUSD['high'])/apeswap_BNBBUSD['high']
 
-    pancakeswapv2_BNBBUSD['PS2APE'] = (apeswap_BNBBUSD['low'] - pancakeswapv2_BNBBUSD['high'])/pancakeswapv2_BNBBUSD['high']
+    # pancakeswapv2_BNBBUSD['PS2APE'] = (apeswap_BNBBUSD['low'] - pancakeswapv2_BNBBUSD['high'])/pancakeswapv2_BNBBUSD['high']
 
-    pancakeswapv2_BNBBUSD.loc[pancakeswapv2_BNBBUSD['PS2APE'] < 0, 'PS2APE'] = 0
+    # pancakeswapv2_BNBBUSD.loc[pancakeswapv2_BNBBUSD['PS2APE'] < 0, 'PS2APE'] = 0
 
-    apeswap_BNBBUSD.loc[apeswap_BNBBUSD['APE2PS'] < 0, 'APE2PS'] = 0
+    # apeswap_BNBBUSD.loc[apeswap_BNBBUSD['APE2PS'] < 0, 'APE2PS'] = 0
 
-    apeswap_BNBBUSD = apeswap_BNBBUSD.dropna()
-    pancakeswapv2_BNBBUSD = pancakeswapv2_BNBBUSD.dropna()
+    # apeswap_BNBBUSD = apeswap_BNBBUSD.dropna()
+    # pancakeswapv2_BNBBUSD = pancakeswapv2_BNBBUSD.dropna()
 
     # create max arbitrage and timestamps list and add values to them
 
@@ -74,18 +74,19 @@ def show_arbitrage_viz(arb_results_list: list) -> None:
 
     timestamps = []
 
-    for i,j,k,l in zip(apeswap_BNBBUSD['APE2PS'], pancakeswapv2_BNBBUSD['PS2APE'], apeswap_BNBBUSD['Datetime'], pancakeswapv2_BNBBUSD['Datetime']):
+    for i,j,k in zip(combined_df['df1_close'], combined_df['df2_close'], combined_df['date_time']):
         if i > j:
             max_arbitrage.append(i * 100.)
             timestamps.append(np.datetime64(pd.to_datetime(k).value,'ns'))
         else:
             max_arbitrage.append(j * 100.)
-            timestamps.append(np.datetime64(pd.to_datetime(l).value,'ns'))
+            timestamps.append(np.datetime64(pd.to_datetime(k).value,'ns'))
 
 
     # create list of options for widgets 
     variables = ['low', 'open', 'high', 'close', 'volume']
-    pairs = ['BNB-BUSD','ETH-BUSD']
+    pairs = []
+    pairs.append(pairstr)
 
     # create space and widgets
     xs = np.linspace(0, 100)
@@ -124,6 +125,17 @@ def show_arbitrage_viz(arb_results_list: list) -> None:
             
         )
     )
+    
+    arb_spread = pn.widgets.FloatSlider(name='arbitrage spread', start=0.5, end=1, value=0.5)
+    
+    @pn.depends(arb_spread=arb_spread)
+    def arbitrage_spread(arb_spread):
+        return hv.Curve(arbitrage_df['close'], 'Arbitrage spread')
+    arbitrage.main.append(
+        pn.Row(
+            pn.Card(hv.DynamicMap(arbitrage_spread), title='Arbitrage spread'),
+        )
+    )
 
     # call the UI 
     arbitrage.show()
@@ -132,12 +144,12 @@ def show_arbitrage_viz(arb_results_list: list) -> None:
 
 if __name__ == '__main__':
     print('viz module testing...')
-    pancakeswapv2_BNBBUSD = pd.read_csv(Path('../datasets/BNBBUSD-2022-01-25-pancakeswapv2.csv'),
-    parse_dates=True,
-    infer_datetime_format=True)
+    # pancakeswapv2_BNBBUSD = pd.read_csv(Path('../datasets/BNBBUSD-2022-01-25-pancakeswapv2.csv'),
+    # parse_dates=True,
+    # infer_datetime_format=True)
     
-    apeswap_BNBBUSD = pd.read_csv(Path('../datasets/BNBBUSD-2022-01-25-apeswap.csv'),
-    parse_dates=True,
-    infer_datetime_format=True)
+    # apeswap_BNBBUSD = pd.read_csv(Path('../datasets/BNBBUSD-2022-01-25-apeswap.csv'),
+    # parse_dates=True,
+    # infer_datetime_format=True)
 
-    show_arbitrage_viz(pancakeswapv2_BNBBUSD, apeswap_BNBBUSD)
+    # show_arbitrage_viz(pancakeswapv2_BNBBUSD, apeswap_BNBBUSD)
