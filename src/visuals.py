@@ -22,7 +22,7 @@ def show_arbitrage_viz(arb_results_list: list) -> None:
       'arbitrage' : <pd.DataFrame>,
       'combined_df : <pd.DataFrame>, 
       'spread_return_df' : <pd.DataFrame>,
-      'profitable_trades': <list>
+      'profitable_trades_df': <pd.DataFrame>
     }
     '''
     # for now, just use whatever is first element in the list of results and draw that
@@ -47,8 +47,8 @@ def show_arbitrage_viz(arb_results_list: list) -> None:
     print(spread_return_df.head(3))
 
     # list
-    profitable_trades = arb_info_dict['profitable_trades']
-    print(profitable_trades)
+    profitable_trades_df = arb_info_dict['profitable_trades_df']
+    print(profitable_trades_df)
 
     # Interactive view
     # load the template 
