@@ -7,22 +7,28 @@ import os
 ## Preparing dataframe 'df' to analyse 'close' column from candles data
 
 # Dropping null values if any
-def drop_null(df):
-    df= df.dropna()
-    return df
+def drop_null(df_list):
+    for df in df_list:
+        df= df.dropna()
+    return df_list
 
 
 # Checking datatype of 'close'column and changing it to float if required
-def data_types_close(df):
-    data_type= df['close'].dtypes
-    if data_type != 'float64':
-        df.loc[:,'close']= df.loc[:,'close'].astype("float")
-    return df
+def data_types_close(df_list):
+    for df in df_list:
+        data_type= df['close'].dtypes
+        if data_type != 'float64':
+            df.loc[:,'close']= df.loc[:,'close'].astype("float")
+    return df_list
 
 # Selecting only 'close' column with index'datetime' for analysis
-def fetch_close_from_df(df):
-    df = df.loc[:,'close']
-    return pd.DataFrame(df)
+def fetch_close_from_df(df_list):
+    df_list_new = []
+    for df in df_list:
+        df = df.loc[:,'close']
+        df = pd.DataFrame(df)
+        df_list_new.append(df)
+    return df_list_new
 
 # calculating arbitrage opportunities (taking absolute value of difference in close prices between the exchanges)
 
@@ -58,12 +64,12 @@ def get_spread_return(df):
 
 def get_profitable_trades(df):
     df.columns= ['returns']
-    profitable_trades=[]
+    profitable_trades_df=[]
     net_profit= df['returns']- 0.8
     for index, row in df.iterrows():
         if row['returns'] > 0.8:
-             profitable_trades.append(row['returns']) 
-    return profitable_trades
+             profitable_trades_df.append(row['returns']) 
+    return pd.DataFrame(profitable_trades_df, columns= ['returns'])
 
 
 def generate_arbitrage_data_between_markets(df1: pd.DataFrame, df2: pd.DataFrame, pair: str, mkt1: str, mkt2: str) -> dict:
@@ -79,21 +85,23 @@ def generate_arbitrage_data_between_markets(df1: pd.DataFrame, df2: pd.DataFrame
       'arbitrage' : <pd.DataFrame>,
       'combined_df : <pd.DataFrame>, 
       'spread_return_df' : <pd.DataFrame>,
-      'profitable_trades': <list>
+      'profitable_trades_df': <pd.DataFrame>
     }
     '''
     arbitrage_results = dict()
     
-    df_1 = drop_null(df1)
-    df_2 = drop_null(df2)
+    df_list= [df1,df2]
     
-    df_1 = data_types_close(df_1)
-    df_2 = data_types_close(df_2)
+    df_list=drop_null(df_list)
     
-    df_1 = fetch_close_from_df(df_1)
-    df_2 = fetch_close_from_df(df_2)
+    df_list = data_types_close(df_list)
+    
+    df_list = fetch_close_from_df(df_list)
 
     arbitrage_results['info'] = (pair, mkt1, mkt2)
+    
+    df_1 = df_list[0]
+    df_2 = df_list[1]
     
     arbitrage = arbitrage_spread(df_1,df_2)
     arbitrage_results['arbitrage'] = arbitrage
@@ -104,8 +112,8 @@ def generate_arbitrage_data_between_markets(df1: pd.DataFrame, df2: pd.DataFrame
     spread_return_df = get_spread_return(combined_df)
     arbitrage_results['spread_return_df'] = spread_return_df
     
-    profitable_trades = get_profitable_trades(spread_return_df)
-    arbitrage_results['profitable_trades']= profitable_trades
+    profitable_trades_df = get_profitable_trades(spread_return_df)
+    arbitrage_results['profitable_trades_df']= profitable_trades_df
 
     #### DEBUG INFO
     print(f"DEBUG ANALYSIS INFO\n")
@@ -118,17 +126,19 @@ def generate_arbitrage_data_between_markets(df1: pd.DataFrame, df2: pd.DataFrame
     print(f"Exchange 2 Dataframe:")
     print(df_2.head(3))
     print("---------------------------------")
-    print(f"Arbitrage trades preview:\n{arbitrage.head(3)}")
+    print(f"Arbitrage trades preview:\n{arbitrage.head()}")
     print("---------------------------------")
     print(f"Arbitrage summary:\n{arbitrage.describe()}")
     print("---------------------------------")
-    print(f"Combined dataframe preview:\n{combined_df.head(3)}")
+    print(f"Combined dataframe preview:\n{combined_df.head()}")
     print("---------------------------------")
-    print(f"Arbitrage Spread return preview:\n{spread_return_df.head(3)}")
+    print(f"Arbitrage Spread returns preview:\n{spread_return_df.head()}")
     print("---------------------------------")
-    print(f"Return Summary:\n{spread_return_df.describe()}")
+    print(f"Returns Summary:\n{spread_return_df.describe()}")
     print("---------------------------------")
-    print(f"Profitable Spread return:\n{len(profitable_trades)}")
+    print(f"Profitable trades summary:\n{profitable_trades_df.describe()}")
+
+
     
 
     return arbitrage_results
