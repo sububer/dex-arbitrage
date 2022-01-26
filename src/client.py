@@ -8,9 +8,12 @@ import os
 import fire
 import questionary
 import datetime
-import sys
+import itertools
+import re
+from analysis import generate_arbitrage_data_between_markets
 from pathlib import Path
 from APIKEYS import API_KEY
+from visuals import show_arbitrage_viz
 
 
 # cli helpers
@@ -30,13 +33,20 @@ def display_data_avail(pair: str) -> None:
 
     if len(matching_data_files) > 0:
         print("Existing pulled data...")
-        for datafile in matching_data_files:
+        for datafile in sorted(matching_data_files):
             print(f"\t{datafile}")
     else:
-        print(f"No existing data available for pair: {pair}")
+        print(f"\nNo existing data available for pair: {pair}")
+
+def get_recent_csv_file_paths_for_pair(pair: str) -> list:
+    DATA_DIR = Path('../datasets/')
+    date_str = datetime.datetime.today().strftime('%Y-%m-%d') + '.csv'
+    recent_data_files = [f for f in os.listdir(DATA_DIR) if f.startswith(f"{pair}-{date_str}")]
+
+    return sorted(recent_data_files)
 
 
-def udpate_and_persist_trade_data(chain, pair):
+def udpate_and_persist_trade_data(chain: str, pair: str) -> list:
     ''' pulls new csv data for all exchange/markets available for a given pair
 
     in: pair string eg USDCBUSD
@@ -56,10 +66,12 @@ def udpate_and_persist_trade_data(chain, pair):
     market_data = get_market_query_data_for_pair(chain, pair)
 
     # get and persist updated data
+    generated_csv_file_list = list()
+
     for pair_key, market_info in market_data.items():
         for exch, market_hash in market_info:
             csv_dir = '../datasets/'
-            csvfilename = f"{pair}-{exch}-{end_date}.csv"
+            csvfilename = f"{pair}-{end_date}-{exch}.csv"
             csvfilepath = Path(csv_dir + csvfilename)
 
             # get market data
@@ -67,27 +79,58 @@ def udpate_and_persist_trade_data(chain, pair):
             query = get_candles(exchange=exch, market=market_hash, start=start_date, end=end_date)
             updated_data_df = format_query_as_dataframe(query)
             updated_data_df.to_csv(csvfilepath)
+            generated_csv_file_list.append(csvfilename)
+    
+    return sorted(generated_csv_file_list)
 
+def get_market_name(csvfilename: str) -> str:
+    match = re.search('.*-.*-(.*).csv$', csvfilename)
+    return match.group(1)
 
-
-
-## call Shivangi's analysis code 
-def do_arbitrage_analysis_for_pair(pair):
+def do_arbitrage_analysis_for_pair(pair: str, csvfiles: list):
     print(f"Running analysis for pair: {pair}")
+    data_files_list = csvfiles[:]
+
+    if len(data_files_list) == 0:
+        data_files_list = get_recent_csv_file_paths_for_pair(pair)
+        
+    # list of arbitrage results for each analyzed market pair
+    arbitrage_results = []
+
+    # analyze 2 market data sets at a time
+    for market_pair in itertools.combinations(data_files_list, 2):
+        # call generate_arbitrage_data_between_markets()
+        csv_dir = '../datasets/'
+        market_a_file_name = market_pair[0]
+        market_b_file_name = market_pair[1]
+        
+        market_a_name = get_market_name(market_a_file_name)
+        market_b_name = get_market_name(market_b_file_name)
+        
+        market_a_file_path = Path(csv_dir + market_a_file_name)
+        market_b_file_path = Path(csv_dir + market_b_file_name)
+
+        market_a_df = pd.read_csv(market_a_file_path, infer_datetime_format=True, parse_dates=True)
+        market_b_df = pd.read_csv(market_b_file_path, infer_datetime_format=True, parse_dates=True)
+
+        arbitrage_data_for_markets = generate_arbitrage_data_between_markets(market_a_df, market_b_df, pair, market_a_name, market_b_name)
+
+        arbitrage_results.append(arbitrage_data_for_markets)
+
+    
+    return arbitrage_results
 
 
 ## call Jaime's viz
-def generate_arbitrage_viz_from_analysis_df():
+def generate_viz_from_arbitrage_results(arb_results: list) -> None:
     print("Generating viz...")
-
-    
+    show_arbitrage_viz(arb_results)
 
 
 # main cli flow
 def run():
     os.environ["API_KEY"] = API_KEY
-    # udpate_and_persist_trade_data('bsc', 'USDTBUSD')
-
+    
     print('Welcome to DEX Arbitrage App.\nYou can select liquidity pool pairs across multiple exchanges to discover arbitrage opportunities.\n')
 
     # select from avail chains
@@ -107,24 +150,25 @@ def run():
 
     display_data_avail(pair_selected)
 
-    # update?
-    data_update_q = "Update new pair data? (y/n)"
+    # get new data?
+    updated_csv_filenames = []
+    data_update_q = "Generate new csv data for pair? (y/n)"
     update_pair_data = questionary.confirm(data_update_q).ask()
     if update_pair_data:
-        udpate_and_persist_trade_data(chain_selected, pair_selected)
+        updated_csv_filenames = udpate_and_persist_trade_data(chain_selected, pair_selected)
 
     # analyze?
+    arbitrage_result_list = []
     run_analysis_q = f"Run analysis for pair {pair_selected} (y/n)"
     run_analysis = questionary.confirm(message=run_analysis_q).ask()
     if run_analysis:
-        do_arbitrage_analysis_for_pair(pair_selected)
+        arbitrage_result_list = do_arbitrage_analysis_for_pair(pair_selected, updated_csv_filenames)
 
-    
     # viz?
     run_viz_q = f"Generate viz for pair {pair_selected} (y/n)"
     run_viz = questionary.confirm(message=run_viz_q).ask()
     if run_viz:
-        generate_arbitrage_viz_from_analysis_df()
+        generate_viz_from_arbitrage_results(arbitrage_result_list)
 
 
 

@@ -62,52 +62,78 @@ def get_profitable_trades(df):
     net_profit= df['returns']- 0.8
     for index, row in df.iterrows():
         if row['returns'] > 0.8:
-             profitable_trades.append('returns') 
+             profitable_trades.append(row['returns']) 
     return profitable_trades
 
-      
 
+def generate_arbitrage_data_between_markets(df1: pd.DataFrame, df2: pd.DataFrame, pair: str, mkt1: str, mkt2: str) -> dict:
+    '''
+    inputs:
+    df1 : dataframe of market A data from nomics candles api data for timeframe X, for given pair
+    df2 : dataframe of market B data from nomics candles api data from timeframe X, for given pair
+    pair : string identifier for pair that data represents
 
-
-if __name__ == '__main__':
-    os.environ["API_KEY"] = API_KEY
-    df_1 = test_candles_pancake()
-    df_2 = test_candles_ape()
+    outputs:
+    arbitrage_results (dict): in the form:
+    { 'info' : [pairstring, market_1, market_2],
+      'arbitrage' : <pd.DataFrame>,
+      'combined_df : <pd.DataFrame>, 
+      'spread_return_df' : <pd.DataFrame>,
+      'profitable_trades': <list>
+    }
+    '''
+    arbitrage_results = dict()
     
-    
-    df_1 = drop_null(df_1)
-    df_2 = drop_null(df_2)
+    df_1 = drop_null(df1)
+    df_2 = drop_null(df2)
     
     df_1 = data_types_close(df_1)
     df_2 = data_types_close(df_2)
     
     df_1 = fetch_close_from_df(df_1)
     df_2 = fetch_close_from_df(df_2)
+
+    arbitrage_results['info'] = (pair, mkt1, mkt2)
     
     arbitrage = arbitrage_spread(df_1,df_2)
-    
+    arbitrage_results['arbitrage'] = arbitrage
+
     combined_df = combine_df(df_1,df_2)
+    arbitrage_results['combined_df'] = combined_df
     
     spread_return_df = get_spread_return(combined_df)
+    arbitrage_results['spread_return_df'] = spread_return_df
     
-    profitable_trades= get_profitable_trades(spread_return_df)
-    
-    print(f"Exchange 1 Dataframe:/n")
-    print(df_1.head())
+    profitable_trades = get_profitable_trades(spread_return_df)
+    arbitrage_results['profitable_trades']= profitable_trades
+
+    #### DEBUG INFO
+    print(f"DEBUG ANALYSIS INFO\n")
+    print(f"pair: {pair}")
+    print(f"\tmarket_1: {mkt1}")
+    print(f"\tmarket_2: {mkt2}")
+    print(f"Exchange 1 Dataframe:")
+    print(df_1.head(3))
     print("---------------------------------")
-    print(f"Exchange 2 Dataframe:/n")
-    print(df_2.head())
+    print(f"Exchange 2 Dataframe:")
+    print(df_2.head(3))
     print("---------------------------------")
-    print(f"Arbitrage trades preview:\n{arbitrage.head()}")
+    print(f"Arbitrage trades preview:\n{arbitrage.head(3)}")
     print("---------------------------------")
-    print(f"Arbitrage summary:{arbitrage.describe()}")
+    print(f"Arbitrage summary:\n{arbitrage.describe()}")
     print("---------------------------------")
-    print(f"Combined dataframe preview:\n{combined_df.head()}")
+    print(f"Combined dataframe preview:\n{combined_df.head(3)}")
     print("---------------------------------")
-    print(f"Arbitrage Spread return preview:\n{spread_return_df.head()}")
+    print(f"Arbitrage Spread return preview:\n{spread_return_df.head(3)}")
     print("---------------------------------")
     print(f"Return Summary:\n{spread_return_df.describe()}")
     print("---------------------------------")
     print(f"Profitable Spread return:\n{len(profitable_trades)}")
-                
-          
+    
+
+    return arbitrage_results
+
+
+if __name__ == '__main__':
+    os.environ["API_KEY"] = API_KEY
+    print('analysis module')
