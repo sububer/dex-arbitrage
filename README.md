@@ -2,7 +2,9 @@
 
 ### Project Overview
 
-Command-line application which can dynamically fetch, analyze and chart multiple blockchains and markets for arbitrage oportunities for liquidity pairs between different exhanges. For example, the [Binance chain](https://www.binance.org/en/smartChain), looking at `BNBBUSD` on [ApeSwap](https://apeswap.finance/) and [PancakeSwap](https://pancakeswap.finance/swap).
+Command-line application which can dynamically fetch, analyze and chart multiple blockchains and markets for arbitrage oportunities for liquidity pairs between different exhanges. For example, the [Binance chain](https://www.binance.org/en/smartChain), looking at `BNBBUSD` on [ApeSwap](https://apeswap.finance/) and [PancakeSwap](https://pancakeswap.finance/swap).  
+
+See [installation guide](#installation-guide) below for specifics on setting up your environment.
 
 ---
 
@@ -78,17 +80,14 @@ You are now ready to run the program!
 First, ensure you've cloned this repo and setup your environment as detailed in the [Installation Guide](#installation-guide)
 
 ### Main application
-Next, open a terminal and cd to the `src` directory. You will run the `client.py` file. This is the file you will run with python.
-
-The application will ask: 
-- choosing a chain
-- choosing a pair to analyze
-- whether you want to get fresh data
-- update latest .csv data
+Next, open a terminal and cd to the `src` directory. You will run the `client.py` file, and follow the prompts to:  
+- choose a chain
+- choose a pair to analyze
+- choose to update (re)fresh data
 - run analysis
 - run vizualizations
 
-The final screen output will be both a text-based summary of the arbitrage. See below for runtime examples of the CLI.
+The final screen output will be both a text-based summary of the arbitrage.
 
 
 ```
@@ -98,6 +97,7 @@ cd <path_to_repo>/src/
 python client.py
 ```
 
+![example application run](./media/example_cli_usage.png)
 
 #### Unit tests
 You can ensure your setup is working by running any of the _tests.py files from within src.
@@ -108,7 +108,6 @@ from dextrader.nomics.utils import get_candles, format_query_as_dataframe, get_r
 ```
 Nomics utils has the functions for scraping nomics data via their api, please see the nomics_test.py file for examples.
 
-![example application run](./media/example_cli_usage.png)
 
 ---
 
