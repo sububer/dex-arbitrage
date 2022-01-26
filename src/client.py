@@ -13,6 +13,7 @@ import re
 from analysis import generate_arbitrage_data_between_markets
 from pathlib import Path
 from APIKEYS import API_KEY
+from visuals import show_arbitrage_viz
 
 
 # cli helpers
@@ -123,9 +124,7 @@ def do_arbitrage_analysis_for_pair(pair: str, csvfiles: list):
 ## call Jaime's viz
 def generate_viz_from_arbitrage_results(arb_results: list) -> None:
     print("Generating viz...")
-    print(arb_results)
-
-    
+    show_arbitrage_viz(arb_results)
 
 
 # main cli flow
