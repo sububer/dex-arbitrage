@@ -82,6 +82,9 @@ def generate_arbitrage_summary(df1: pd.DataFrame,
     cols = ['low_x', 'low_y', 'open_x', 'open_y', 'close_x', 'close_y', 'high_x', 'high_y']
     merged_data[cols] = merged_data[cols].apply(pd.to_numeric, errors='coerce')
 
+    # arbitrage
+    merged_data['arbitrage'] = (merged_data['close_x'] - merged_data['close_y']).abs()
+
     # Compute arbitrage from close values
     merged_data = merged_data.assign(arbitrage_close=
                                      lambda x: np.where(x['close_x'] > x['close_y'],
