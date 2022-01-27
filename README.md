@@ -31,8 +31,6 @@ From [pip](https://pypi.org/):
 - [holoviews](https://pypi.org/project/holoviews/)
 - [requests](https://pypi.org/project/requests/)
 - [questionary](https://github.com/tmbo/questionary)
-- [questionary](https://github.com/tmbo/questionary)
-- [questionary](https://github.com/tmbo/questionary)
 
 Self-authored:  
 - [dextrader.nomics.pairs](src/dextrader/nomics/pairs.py) Market/pair config data
