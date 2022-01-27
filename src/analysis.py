@@ -74,26 +74,43 @@ def generate_arbitrage_summary(df1: pd.DataFrame,
                                mkt1: str,
                                mkt2: str,
                                threshold: float = 0.8) -> dict:
+
+    # Merge data with shared timestamps
     merged_data = pd.merge(df1, df2, how='outer', on='Datetime')
+
+    # Convert data to numeric data
     cols = ['low_x', 'low_y', 'open_x', 'open_y', 'close_x', 'close_y', 'high_x', 'high_y']
     merged_data[cols] = merged_data[cols].apply(pd.to_numeric, errors='coerce')
+
+    # Compute arbitrage from close values
     merged_data = merged_data.assign(arbitrage_close=
                                      lambda x: np.where(x['close_x'] > x['close_y'],
                                                         (x['close_x'] - x['close_y'])/x['close_x'],
                                                         (x['close_y'] - x['close_x'])/x['close_y']))
     merged_data['arbitrage_close'] *= 100
+
+    # Compute min arbitrage (worst case)
     merged_data = merged_data.assign(arbitrage_min=
                                      lambda x: np.where(x['open_x'] > x['open_y'],
-                                                        (x['high_x'] - x['low_y'])/x['high_x'],
-                                                        (x['high_y'] - x['low_x'])/x['high_y']))
+                                                        (x['low_x'] - x['high_y'])/x['open_y'],
+                                                        (x['low_y'] - x['high_x'])/x['open_x']))
     merged_data['arbitrage_min'] *= 100
+
+    # Find trades that exceed the profit threshold
     merged_data = merged_data.assign(profitable_trades_close=
                                      lambda x: x['arbitrage_close'] > threshold)
     merged_data = merged_data.assign(profitable_trades_min=
                                      lambda x: x['arbitrage_min'] > threshold)
+
+    # Get time in int64
+    merged_data['datetime64'] = merged_data['Datetime'].astype('datetime64[ns]')
+
     arbitrage_results = dict()
     arbitrage_results['info'] = (pair, mkt1, mkt2)
-    arbitrage_results['raw'] = merged_data
+    arbitrage_results['dataframe'] = merged_data
+    arbitrage_results['profitable_trades_min'] = merged_data['profitable_trades_min'].sum()
+    arbitrage_results['profitable_trades_close'] = merged_data['profitable_trades_close'].sum()
+
     return arbitrage_results
 
 

@@ -10,7 +10,7 @@ import questionary
 import datetime
 import itertools
 import re
-from analysis import generate_arbitrage_data_between_markets
+from analysis import generate_arbitrage_data_between_markets, generate_arbitrage_summary
 from pathlib import Path
 from APIKEYS import API_KEY
 from visuals import show_arbitrage_viz
@@ -113,11 +113,10 @@ def do_arbitrage_analysis_for_pair(pair: str, csvfiles: list):
         market_a_df = pd.read_csv(market_a_file_path, infer_datetime_format=True, parse_dates=True)
         market_b_df = pd.read_csv(market_b_file_path, infer_datetime_format=True, parse_dates=True)
 
-        arbitrage_data_for_markets = generate_arbitrage_data_between_markets(market_a_df, market_b_df, pair, market_a_name, market_b_name)
-
+        #arbitrage_data_for_markets = generate_arbitrage_data_between_markets(market_a_df, market_b_df, pair, market_a_name, market_b_name)
+        arbitrage_data_for_markets = generate_arbitrage_summary(market_a_df, market_b_df, pair, market_a_name, market_b_name)
         arbitrage_results.append(arbitrage_data_for_markets)
 
-    
     return arbitrage_results
 
 
