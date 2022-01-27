@@ -1,16 +1,11 @@
 import pandas as pd
-import hvplot.pandas
-from pathlib import Path
 import holoviews as hv
 from holoviews import dim, opts
 hv.extension('bokeh', 'matplotlib')
 import numpy as np
 import panel as pn
-from panel.interact import interact, interactive, fixed, interact_manual
-from panel import widgets
 pn.extension()
-import os
-import sys
+
 
 # pancakeswapv2_BNBBUSD: pd.DataFrame, apeswap_BNBBUSD: pd.DataFrame
 def show_arbitrage_viz(arb_results_list: list) -> None:
@@ -32,6 +27,7 @@ def show_arbitrage_viz(arb_results_list: list) -> None:
     # unpack info tuple ('BNBBUSD', 'apeswap', 'pancakeswapv2')
     (pairstr, mkt1, mkt2) = arb_info_dict['info']
 
+    '''
     # dataframes
     arbitrage_df = arb_info_dict['arbitrage'].dropna()
     print('arbitrage_df')
@@ -49,7 +45,7 @@ def show_arbitrage_viz(arb_results_list: list) -> None:
     # list
     profitable_trades_df = arb_info_dict['profitable_trades_df']
     print(profitable_trades_df)
-
+    '''
     # Interactive view
     # load the template 
     arbitrage = pn.template.MaterialTemplate(title='Arbitrage')
@@ -103,8 +99,8 @@ def show_arbitrage_viz(arb_results_list: list) -> None:
 
 
     # Create the underlayer plots
-    p1 = hv.Curve((time,diff), 'Time Since Start', '% Arbitrage')
-    p2 = hv.HLine(estimated_tolerance,label='Estimated Threshold')
+    p1 = hv.Curve((time, diff), 'Time Since Start', '% Arbitrage')
+    p2 = hv.HLine(estimated_tolerance, label='Estimated Threshold')
 
     @pn.depends(diff1=diff1)
     def plot_(diff1):
