@@ -115,14 +115,26 @@ Nomics utils has the functions for scraping nomics data via their api, please se
 ### Assumptions
 Nomics candle data for 1 minute intervals was used for a 24 hr period to simplify the arbitrage analysis between two markets.
 
+Both an optimistic analysis, using the closed prices for each candle minute, as well as a more conservative / worst-case analysis that was done to try and increase the likelihood of having a profitable arbitrage trade opportunity. [Examples below](#summary)
+
 Any new chains, markets, pairs can be entered into the [pairs](src/dextrader/nomics/pairs.py) config module and will be dynamically fetched based on user choice with the application.
 
 
 ### Summary
 
-TBD.  Put in a real example with real graph/summary viz. This is just a placeholder:
+The arbitrage tool is able to update and analyze market pair data across exchanges on a given chain. It became clear that some pairs exhibit more opportunities than others, even with the more conservative analysis. Here's an example of a couple of analyses, showing that with say `Avalanche/AVAXUSDT` there are multiple opportunities, whereas with `Binance/USDTBUSD` there are few.  
 
-![example arbitrage spread](./media/example_spread_plot.png)
+
+| Chain | Pair | Opportunities (worst case)|
+| :---       |    :---:    | :---:   |
+| Avalanche  | AVAXUSDT    |   ~ 9   |
+| Binance    | USDTBUSD    |    0    |
+
+
+![Avalanche Worst Case](./media/avax_avaxusdt_worst.png)
+
+![Binance Worst Case](./media/bsc_usdtbusd_worst.png)
+
 
 ---
 
