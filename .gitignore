@@ -133,3 +133,6 @@ src/APIKEYS.py
 
 # PYCHARM
 .idea/
+
+# osx mac
+.DS_Store

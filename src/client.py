@@ -10,7 +10,8 @@ import questionary
 import datetime
 import itertools
 import re
-from analysis import generate_arbitrage_data_between_markets
+import sys
+from analysis import generate_arbitrage_data_between_markets, generate_arbitrage_summary
 from pathlib import Path
 from APIKEYS import API_KEY
 from visuals import show_arbitrage_viz
@@ -40,7 +41,7 @@ def display_data_avail(pair: str) -> None:
 
 def get_recent_csv_file_paths_for_pair(pair: str) -> list:
     DATA_DIR = Path('../datasets/')
-    date_str = datetime.datetime.today().strftime('%Y-%m-%d') + '.csv'
+    date_str = datetime.datetime.today().strftime('%Y-%m-%d')
     recent_data_files = [f for f in os.listdir(DATA_DIR) if f.startswith(f"{pair}-{date_str}")]
 
     return sorted(recent_data_files)
@@ -93,7 +94,7 @@ def do_arbitrage_analysis_for_pair(pair: str, csvfiles: list):
 
     if len(data_files_list) == 0:
         data_files_list = get_recent_csv_file_paths_for_pair(pair)
-        
+
     # list of arbitrage results for each analyzed market pair
     arbitrage_results = []
 
@@ -113,11 +114,10 @@ def do_arbitrage_analysis_for_pair(pair: str, csvfiles: list):
         market_a_df = pd.read_csv(market_a_file_path, infer_datetime_format=True, parse_dates=True)
         market_b_df = pd.read_csv(market_b_file_path, infer_datetime_format=True, parse_dates=True)
 
-        arbitrage_data_for_markets = generate_arbitrage_data_between_markets(market_a_df, market_b_df, pair, market_a_name, market_b_name)
-
+        #arbitrage_data_for_markets = generate_arbitrage_data_between_markets(market_a_df, market_b_df, pair, market_a_name, market_b_name)
+        arbitrage_data_for_markets = generate_arbitrage_summary(market_a_df, market_b_df, pair, market_a_name, market_b_name)
         arbitrage_results.append(arbitrage_data_for_markets)
 
-    
     return arbitrage_results
 
 
