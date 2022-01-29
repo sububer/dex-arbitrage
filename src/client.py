@@ -1,6 +1,3 @@
-from email import message
-from random import choices
-from time import strftime
 import pandas as pd
 from dextrader.nomics.utils import get_candles, format_query_as_dataframe, get_recent_trades
 from dextrader.nomics.pairs import get_chains, get_exchanges, get_market_pairs, get_market_query_data_for_pair
@@ -10,11 +7,10 @@ import questionary
 import datetime
 import itertools
 import re
-import sys
-from analysis import generate_arbitrage_data_between_markets, generate_arbitrage_summary
+from dextrader.analysis.arbitrage import generate_arbitrage_summary, debug_arbitrage_results
 from pathlib import Path
 from APIKEYS import API_KEY
-from visuals import show_arbitrage_viz
+from dextrader.vis.arbitrage_holoview import show_arbitrage_viz
 
 
 # cli helpers
@@ -23,10 +19,12 @@ def display_exchanges(exch_list):
     for exch in exch_list:
         print(f"\t{exch}")
 
+
 def display_pairs(pair_list):
     print('Pairs:')
     for pair in pair_list:
         print(f"\t{pair}")
+
 
 def display_data_avail(pair: str) -> None:
     DATA_DIR = Path('../datasets/')
@@ -38,6 +36,7 @@ def display_data_avail(pair: str) -> None:
             print(f"\t{datafile}")
     else:
         print(f"\nNo existing data available for pair: {pair}")
+
 
 def get_recent_csv_file_paths_for_pair(pair: str) -> list:
     DATA_DIR = Path('../datasets/')
@@ -84,9 +83,11 @@ def udpate_and_persist_trade_data(chain: str, pair: str) -> list:
     
     return sorted(generated_csv_file_list)
 
+
 def get_market_name(csvfilename: str) -> str:
     match = re.search('.*-.*-(.*).csv$', csvfilename)
     return match.group(1)
+
 
 def do_arbitrage_analysis_for_pair(pair: str, csvfiles: list):
     print(f"Running analysis for pair: {pair}")
@@ -114,8 +115,8 @@ def do_arbitrage_analysis_for_pair(pair: str, csvfiles: list):
         market_a_df = pd.read_csv(market_a_file_path, infer_datetime_format=True, parse_dates=True)
         market_b_df = pd.read_csv(market_b_file_path, infer_datetime_format=True, parse_dates=True)
 
-        #arbitrage_data_for_markets = generate_arbitrage_data_between_markets(market_a_df, market_b_df, pair, market_a_name, market_b_name)
         arbitrage_data_for_markets = generate_arbitrage_summary(market_a_df, market_b_df, pair, market_a_name, market_b_name)
+        debug_arbitrage_results(arbitrage_data_for_markets)
         arbitrage_results.append(arbitrage_data_for_markets)
 
     return arbitrage_results
