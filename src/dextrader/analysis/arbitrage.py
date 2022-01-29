@@ -61,7 +61,7 @@ def generate_arbitrage_summary(df1: pd.DataFrame,
     arbitrage_results = dict()
     arbitrage_results['info'] = (pair, mkt1, mkt2)
     arbitrage_results['dataframe'] = merged_data
-    arbitrage_results['profitable_trades_min'] = np.sum(merged_data['profitable_trades_close'].to_numpy().astype(int))
+    arbitrage_results['profitable_trades_min'] = np.sum(merged_data['profitable_trades_min'].to_numpy().astype(int))
     arbitrage_results['profitable_trades_close'] = np.sum(merged_data['profitable_trades_close'].to_numpy().astype(int))
     return arbitrage_results
 
