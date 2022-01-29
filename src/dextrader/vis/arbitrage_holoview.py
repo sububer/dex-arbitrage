@@ -26,8 +26,9 @@ def show_arbitrage_viz(arb_results_list: list) -> None:
     (pairstr, mkt1, mkt2) = arb_info_dict['info']
 
     # Interactive view
-    arbitrage = pn.template.MaterialTemplate(title='Arbitrage')
-
+    pn.extension(sizing_mode='stretch_width')
+    arbitrage = pn.template.MaterialTemplate(title='Arbitrage Opportunity Analysis', theme=pn.template.theme.DarkTheme)
+    arbitrage.template.theme = 'DarkTheme'
     # create list of options for widgets
     variables = ['close', 'worst case']
 
@@ -72,9 +73,9 @@ def show_arbitrage_viz(arb_results_list: list) -> None:
 
     # append the main section
     arbitrage.main.append(
-        pn.Row(
-            pn.Card(hv.DynamicMap(plot_), title='Arbitrage Opportunities'),
-
+        pn.Column(
+            pn.Card(hv.DynamicMap(plot_), title='Arbitrage Opportunities')
         )
     )
     arbitrage.show()
+

@@ -1,5 +1,7 @@
 import pandas as pd
 import numpy as np
+from pathlib import Path
+import pickle
 
 
 def generate_arbitrage_summary(df1: pd.DataFrame,
@@ -62,6 +64,15 @@ def generate_arbitrage_summary(df1: pd.DataFrame,
     arbitrage_results['profitable_trades_min'] = np.sum(merged_data['profitable_trades_close'].to_numpy().astype(int))
     arbitrage_results['profitable_trades_close'] = np.sum(merged_data['profitable_trades_close'].to_numpy().astype(int))
     return arbitrage_results
+
+
+def save_analysis(arbitrage: dict) -> None:
+    pckl_dir = '../saved/'
+    pcklfilename = f"{dict['info'][0]}-{dict['info'][1]}-{dict['info'][2]}.pkl"
+    pcklfilepath = Path(pckl_dir + pcklfilename)
+    with open(pcklfilepath, 'wb') as handle:
+        pickle.dump(arbitrage, handle, protocol=pickle.HIGHEST_PROTOCOL)
+    return
 
 
 def debug_arbitrage_results(arbitrage_results: dict) -> None:
