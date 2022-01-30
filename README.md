@@ -122,18 +122,30 @@ Any new chains, markets, pairs can be entered into the [pairs](src/dextrader/nom
 
 ### Summary
 
-The arbitrage tool is able to update and analyze market pair data across exchanges on a given chain. It became clear that some pairs exhibit more opportunities than others, even with the more conservative analysis. Here's an example of a couple of analyses, showing that with say `Avalanche/AVAXUSDT` there are multiple opportunities, whereas with `Binance/USDTBUSD` there are few.  
+The arbitrage tool is able to update and analyze market pair data across multiple exchanges on a given chain. For each selected pair, the arbitrage opportunities are calculated across the combinations of all exchanges available. Then, both a textual summary and a set of three plots, an interactive `Arbitrage Spread`, a `1-min Candle`, and `Trade Volume` views are presented to the user.  
+
+Below is an example of the summary and three plots, for an analysis on the `Avalanche` chain for `AVAXUSDT` pair. You can see that each exchange pair indeed yeilds different levels of arbitrage potential.  
 
 
-| Chain | Pair | Opportunities (worst case)|
-| :---       |    :---:    | :---:   |
-| Avalanche  | AVAXUSDT    |   ~ 9   |
-| Binance    | USDTBUSD    |    0    |
+| Chain / Pair | Exchanges | Profitable Opportunties (worst case) | Profitable Opportunties (closing prices) |
+| :---       |    :---:    | :---:   | :---:   |
+| Avalanche / AVAXUSDT |  pangolin v  sushiswap_avalanche  | 7 |  12 |
+| Avalanche / AVAXUSDT |  pangolin v traderjoe   | 0 |  5 |
+| Avalanche / AVAXUSDT |  sushiswap v traderjoe   | 3 |  23 |  
 
 
-![Avalanche Worst Case](./media/avax_avaxusdt_worst.png)
 
-![Binance Worst Case](./media/bsc_usdtbusd_worst.png)
+`Profitable Trades Summary (textual): AVAXUSDT Summary (Pangolin v Sushiswap)`  
+![Avalanche AVAXUSDT Summary (Pangolin v Sushiswap) ](media/avax_profitable_pangolin_sushiswap.png)  
+
+`Spread Plot -- (note opportunities above red threshold line)`  
+![Avalanche AVAXUSDT Arbitrage Spread w/Opportunities](media/avaxusdt_spread.png)  
+
+`1-min Candle View`  
+![Avalanche AVAXUSDT 1-min Candle View](media/avax_usdt_candle.png)  
+
+`Trade Volume View`  
+![Avalanche AVAXUSDT Trade Volume View](media/avaxusdt_volume.png)
 
 
 ---
