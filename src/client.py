@@ -7,6 +7,7 @@ import questionary
 import datetime
 import itertools
 import re
+import sys
 from dextrader.analysis.arbitrage import generate_arbitrage_summary, debug_arbitrage_results
 from pathlib import Path
 from APIKEYS import API_KEY
@@ -41,7 +42,7 @@ def display_data_avail(pair: str) -> None:
 def get_recent_csv_file_paths_for_pair(pair: str) -> list:
     DATA_DIR = Path('../datasets/')
     date_str = datetime.datetime.today().strftime('%Y-%m-%d')
-    recent_data_files = [f for f in os.listdir(DATA_DIR) if f.startswith(f"{pair}-{date_str}")]
+    recent_data_files = [f for f in os.listdir(DATA_DIR) if f.startswith(f"{pair}-")]
 
     return sorted(recent_data_files)
 
