@@ -107,6 +107,10 @@ from dextrader.nomics.utils import get_candles, format_query_as_dataframe, get_r
 Nomics utils has the functions for scraping nomics data via their api, please see the nomics_test.py file for examples.
 
 
+#### Known Issues  
+There is a bug where if you try and re-use old-csv data from before today, the filter may not pick it up and you will get an empty analysis or crash. If so, just be sure to refresh data for your selected pair, and re-run. If you have existing csv data from earlier today, everything will work. Will be fixed in next version.  
+
+
 ---
 
 
