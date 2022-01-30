@@ -45,6 +45,7 @@ def show_arbitrage_viz(arb_results_list: list) -> None:
     @pn.depends(exchs=exchs)
     def candles_(exchs):
         arb_info_dict = arb_results_list[exch_dict[exchs]]
+        pairstr,mkt1,_ =arb_info_dict['info']
         df = arb_info_dict['dataframe']
         df['time_start'] = df.datetime64 - t_delta  # rectangles start
         df['time_end'] = df.datetime64 + t_delta  # rectangles end
@@ -55,16 +56,17 @@ def show_arbitrage_viz(arb_results_list: list) -> None:
                                     vdims=['positive'])
         candlestick = candlestick.redim.label(Low='Values')
         return candlestick.opts(hv.opts.Rectangles(color='positive', cmap=['red', 'green'], responsive=True),
-                                hv.opts.Segments(color='black', height=400, responsive=True))
+                                hv.opts.Segments(color='black', height=400, responsive=True),
+                                hv.opts(bgcolor='lightgray', xlabel='Date/Hour', ylabel='Price', title=pairstr))
 
     @pn.depends(exchs=exchs)
     def volume_(exchs):
         arb_info_dict = arb_results_list[exch_dict[exchs]]
         pairstr,mkt1,_ =arb_info_dict['info']
-        plot = arb_info_dict['dataframe'].hvplot(x="datetime64", y="volume_x", kind="line", responsive=True)
+        plot = arb_info_dict['dataframe'].hvplot(x="datetime64", y="volume_x", xlabel= 'Date/Hour', ylabel='Num Trades', kind="line", responsive=True)
         return plot.opts(bgcolor='lightgray',
-                         title="Volume {0} for {1}".format(pairstr, mkt1),
-                         height=200,
+                         title="{0} - {1}".format(pairstr, mkt1),
+                         height=400,
                          responsive=True)
 
     @pn.depends(tol=tol, variable=variable, exchs=exchs)
@@ -92,9 +94,11 @@ def show_arbitrage_viz(arb_results_list: list) -> None:
                                          group='Group',
                                          label='Opportunity').opts(color='g', marker='+', size=10))
         return plot.opts(bgcolor='lightgray',
-                         title="Arbitrage {0} for {1} vs {2}".format(pairstr, mkt1, mkt2),
-                         height=600,
-                         responsive=True)
+                         title="{0} -- {1} vs {2}".format(pairstr, mkt1, mkt2),
+                         height=500,
+                         responsive=True,
+                         xlabel='Date/Hour',
+                         ylabel='Spread')
 
     # append the widgets to the sidebar
     arbitrage.sidebar.append(tol)
@@ -104,9 +108,9 @@ def show_arbitrage_viz(arb_results_list: list) -> None:
     # append the main section
     arbitrage.main.append(
         pn.Column(
-            pn.Card(hv.DynamicMap(plot_), title='Arbitrage Spread Summary'),
-            pn.Card(hv.DynamicMap(candles_), title='1 Minute Candle Data'),
-            pn.Card(hv.DynamicMap(volume_)),
+            pn.Card(hv.DynamicMap(plot_), title='Arbitrage Spread W/Opportunities'),
+            pn.Card(hv.DynamicMap(candles_), title='1 Minute Candle'),
+            pn.Card(hv.DynamicMap(volume_), title='Pair/Exchange Volume'),
         )
     )
     arbitrage.show()
