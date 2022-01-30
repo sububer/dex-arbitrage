@@ -17,11 +17,11 @@ nomics["chain"]["polygon"]["exchanges"]["balancerv2_polygon"] = {"markets": {}}
 nomics["chain"]["polygon"]["exchanges"]["dodo_polygon"] = {"markets": {}}
 
 nomics["chain"]["bsc"]["exchanges"]["pancakeswapv2"]["markets"]["BNBBUSD"] = "0x58f876857a02d6762e0101bb5c46a8c1ed44dc16"
-nomics["chain"]["bsc"]["exchanges"]["pancakeswapv2"]["markets"]["USDCBUSD"] = "0xd99c7f6c65857ac913a8f880a4cb84032ab2fc5b"
-nomics["chain"]["bsc"]["exchanges"]["pancakeswapv2"]["markets"]["USDTBUSD"] = "0x7efaef62fddcca950418312c6c91aef321375a00"
+#nomics["chain"]["bsc"]["exchanges"]["pancakeswapv2"]["markets"]["USDCBUSD"] = "0xd99c7f6c65857ac913a8f880a4cb84032ab2fc5b"
+#nomics["chain"]["bsc"]["exchanges"]["pancakeswapv2"]["markets"]["USDTBUSD"] = "0x7efaef62fddcca950418312c6c91aef321375a00"
 nomics["chain"]["bsc"]["exchanges"]["apeswap"]["markets"]["BNBBUSD"] = "0x51e6d27fa57373d8d4c256231241053a70cb1d93"
-nomics["chain"]["bsc"]["exchanges"]["apeswap"]["markets"]["USDCBUSD"] = "0xc087c78abac4a0e900a327444193dbf9ba69058e"
-nomics["chain"]["bsc"]["exchanges"]["apeswap"]["markets"]["USDTBUSD"] = "0x2e707261d086687470b515b320478eb1c88d49bb"
+#nomics["chain"]["bsc"]["exchanges"]["apeswap"]["markets"]["USDCBUSD"] = "0xc087c78abac4a0e900a327444193dbf9ba69058e"
+#nomics["chain"]["bsc"]["exchanges"]["apeswap"]["markets"]["USDTBUSD"] = "0x2e707261d086687470b515b320478eb1c88d49bb"
 
 nomics["chain"]["avalanche"]["exchanges"]["sushiswap_avalanche"]["markets"]["AVAXUSDT"] = "0x09657b445df5bf0141e3ef0f5276a329fc01de01"
 nomics["chain"]["avalanche"]["exchanges"]["traderjoe"]["markets"]["AVAXUSDT"] = "0xed8cbd9f0ce3c6986b22002f03c6475ceb7a6256"
