@@ -68,7 +68,7 @@ def generate_arbitrage_summary(df1: pd.DataFrame,
 
 def save_analysis(arbitrage: dict) -> None:
     pckl_dir = '../saved/'
-    pcklfilename = f"{dict['info'][0]}-{dict['info'][1]}-{dict['info'][2]}.pkl"
+    pcklfilename = f"{arbitrage['info'][0]}-{arbitrage['info'][1]}-{arbitrage['info'][2]}.pkl"
     pcklfilepath = Path(pckl_dir + pcklfilename)
     with open(pcklfilepath, 'wb') as handle:
         pickle.dump(arbitrage, handle, protocol=pickle.HIGHEST_PROTOCOL)

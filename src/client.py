@@ -9,9 +9,9 @@ import itertools
 import re
 from dextrader.analysis.arbitrage import generate_arbitrage_summary, debug_arbitrage_results
 from pathlib import Path
-from APIKEYS import API_KEY
 from dextrader.vis.arbitrage_holoview import show_arbitrage_viz
-
+# NOMICS-API uncomment if running via API
+#from APIKEYS import API_KEY
 
 # cli helpers
 def display_exchanges(exch_list):
@@ -26,16 +26,24 @@ def display_pairs(pair_list):
         print(f"\t{pair}")
 
 
-def display_data_avail(pair: str) -> None:
+def display_data_avail(pair: str) -> dict:
     DATA_DIR = Path('../datasets/')
     matching_data_files = [f for f in os.listdir(DATA_DIR) if f.startswith(pair)]
 
     if len(matching_data_files) > 0:
         print("Existing pulled data...")
+        dates_avail = dict()
         for datafile in sorted(matching_data_files):
+            date_avail = "".join(datafile.split('-')[1:4])
+            if date_avail in dates_avail:
+                dates_avail[date_avail].append(datafile)
+            else:
+                dates_avail[date_avail] = [datafile]
             print(f"\t{datafile}")
+        return dates_avail
     else:
         print(f"\nNo existing data available for pair: {pair}")
+        return dict()
 
 
 def get_recent_csv_file_paths_for_pair(pair: str) -> list:
@@ -46,7 +54,7 @@ def get_recent_csv_file_paths_for_pair(pair: str) -> list:
     return sorted(recent_data_files)
 
 
-def udpate_and_persist_trade_data(chain: str, pair: str) -> list:
+def update_and_persist_trade_data(chain: str, pair: str) -> list:
     ''' pulls new csv data for all exchange/markets available for a given pair
 
     in: pair string eg USDCBUSD
@@ -130,7 +138,8 @@ def generate_viz_from_arbitrage_results(arb_results: list) -> None:
 
 # main cli flow
 def run():
-    os.environ["API_KEY"] = API_KEY
+    # NOMICS-API uncomment if running via API
+    # os.environ["API_KEY"] = API_KEY
     
     print('Welcome to DEX Arbitrage App.\nYou can select liquidity pool pairs across multiple exchanges to discover arbitrage opportunities.\n')
 
@@ -149,14 +158,20 @@ def run():
     pair_selected = questionary.select(message=pair_q, choices=pairs_avail).ask()
 
 
-    display_data_avail(pair_selected)
+    dates_avail = display_data_avail(pair_selected)
 
     # get new data?
     updated_csv_filenames = []
-    data_update_q = "Generate new csv data for pair? (y/n)"
+    data_update_q = "Generate new csv data for pair? -- Requires NOMICS API setup!!"
     update_pair_data = questionary.confirm(data_update_q).ask()
     if update_pair_data:
-        updated_csv_filenames = udpate_and_persist_trade_data(chain_selected, pair_selected)
+        updated_csv_filenames = update_and_persist_trade_data(chain_selected, pair_selected)
+    elif len(dates_avail):
+        file_q = "Select a file to analyze"
+        selected_date = questionary.select(message=file_q, choices=list(dates_avail.keys())).ask()
+        updated_csv_filenames = dates_avail[selected_date]
+    else:
+        raise ValueError("You don't have any cached files. Select (yes) to pull new data with nomics API.")
 
     # analyze?
     arbitrage_result_list = []
