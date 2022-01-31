@@ -9,9 +9,9 @@ import itertools
 import re
 from dextrader.analysis.arbitrage import generate_arbitrage_summary, debug_arbitrage_results
 from pathlib import Path
-from APIKEYS import API_KEY
 from dextrader.vis.arbitrage_holoview import show_arbitrage_viz
-
+# NOMICS-API uncomment if running via API
+#from APIKEYS import API_KEY
 
 # cli helpers
 def display_exchanges(exch_list):
@@ -138,7 +138,8 @@ def generate_viz_from_arbitrage_results(arb_results: list) -> None:
 
 # main cli flow
 def run():
-    os.environ["API_KEY"] = API_KEY
+    # NOMICS-API uncomment if running via API
+    # os.environ["API_KEY"] = API_KEY
     
     print('Welcome to DEX Arbitrage App.\nYou can select liquidity pool pairs across multiple exchanges to discover arbitrage opportunities.\n')
 
@@ -161,7 +162,7 @@ def run():
 
     # get new data?
     updated_csv_filenames = []
-    data_update_q = "Generate new csv data for pair? (y/n)"
+    data_update_q = "Generate new csv data for pair? -- Requires NOMICS API setup!!"
     update_pair_data = questionary.confirm(data_update_q).ask()
     if update_pair_data:
         updated_csv_filenames = update_and_persist_trade_data(chain_selected, pair_selected)

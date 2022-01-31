@@ -4,6 +4,8 @@
 
 Command-line application which can dynamically fetch, analyze and chart multiple blockchains and markets for arbitrage oportunities for liquidity pairs between different exhanges. For example, the [Binance chain](https://www.binance.org/en/smartChain), looking at `BNBBUSD` on [ApeSwap](https://apeswap.finance/) and [PancakeSwap](https://pancakeswap.finance/swap).  
 
+[Presentation slides](/media/Presentation.pdf)  
+
 See [installation guide](#installation-guide) below for specifics on setting up your environment.
 
 ---
@@ -49,7 +51,9 @@ See [installation guide](#installation-guide) below for specifics on setting up 
 
 ## Installation Guide
 
-:warning: **If you wish to pull real-time data via the nomics api, you will need your own nomics api-key**: Put your key in a file called APIKEYS.py in `/src` with `API_KEY = "{YOUR_KEY}"` inside. :warning:
+:warning: **If you wish to pull real-time data via the nomics api, you will need your own nomics api-key**: Put your key in a file called APIKEYS.py in `/src` with `API_KEY = "{YOUR_KEY}"` inside. Also, search for `NOMICS-API uncomment` in `client.py` and uncomment the line below to use the API key. :warning:
+
+
 
 You will need Python 3.7 for this application to run. An easy way to install python 3.7 is to download and install [Anaconda](https://www.anaconda.com/products/individual). After installing anaconda, open a terminal/command-prompt, and setup a python 3.7 environment, and then activate it like so:
 
